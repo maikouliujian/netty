@@ -75,6 +75,7 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     public final void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         // Normally this method will never be called as handlerAdded(...) should call initChannel(...) and remove
         // the handler.
+        //todo 调用initChannel
         if (initChannel(ctx)) {
             // we called initChannel(...) so we need to call now pipeline.fireChannelRegistered() to ensure we not
             // miss an event.
@@ -126,6 +127,27 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     private boolean initChannel(ChannelHandlerContext ctx) throws Exception {
         if (initMap.add(ctx)) { // Guard against re-entrance.
             try {
+                //todo 调用protected abstract void initChannel(C ch) throws Exception;
+                //todo 其实就是调用我们在bootstrap初始化时实现的initChannel方法，然后就可以把handler加入pipeline中了
+                /***
+                 * bootstrap.handler(
+                 *                 new ChannelInitializer<SocketChannel>() {
+                 *                     @Override
+                 *                     public void initChannel(SocketChannel channel) throws Exception {
+                 *
+                 *                         // SSL handler should be added first in the pipeline
+                 *                         if (clientSSLFactory != null) {
+                 *                             SslHandler sslHandler =
+                 *                                     clientSSLFactory.createNettySSLHandler(
+                 *                                             channel.alloc(),
+                 *                                             serverSocketAddress.getAddress().getCanonicalHostName(),
+                 *                                             serverSocketAddress.getPort());
+                 *                             channel.pipeline().addLast("ssl", sslHandler);//todo outhander
+                 *                         }
+                 *                         channel.pipeline().addLast(protocol.getClientChannelHandlers());
+                 *                     }
+                 *                 });
+                 */
                 initChannel((C) ctx.channel());
             } catch (Throwable cause) {
                 // Explicitly call exceptionCaught(...) as we removed the handler before calling initChannel(...).
@@ -134,6 +156,7 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
             } finally {
                 ChannelPipeline pipeline = ctx.pipeline();
                 if (pipeline.context(this) != null) {
+                    //todo 删除pipeline中的ChannelInitializer
                     pipeline.remove(this);
                 }
             }

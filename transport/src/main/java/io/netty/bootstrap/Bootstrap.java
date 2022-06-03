@@ -152,6 +152,7 @@ public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
      * @see #connect()
      */
     private ChannelFuture doResolveAndConnect(final SocketAddress remoteAddress, final SocketAddress localAddress) {
+        //todo 初始化方法
         final ChannelFuture regFuture = initAndRegister();
         final Channel channel = regFuture.channel();
 
@@ -259,6 +260,7 @@ public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
     @Override
     void init(Channel channel) {
         ChannelPipeline p = channel.pipeline();
+        //todo config.handler()其实就是 ChannelInitializer 实例
         p.addLast(config.handler());
 
         setChannelOptions(channel, newOptionsArray(), logger);
