@@ -1301,7 +1301,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             onUnhandledInboundChannelReadComplete();
         }
     }
-
+    //todo HeadContext
     final class HeadContext extends AbstractChannelHandlerContext
             implements ChannelOutboundHandler, ChannelInboundHandler {
 
@@ -1357,16 +1357,18 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             unsafe.deregister(promise);
         }
 
+        //todo 所有的读首先都会调用HeadContext的read方法
         @Override
         public void read(ChannelHandlerContext ctx) {
             unsafe.beginRead();
         }
 
+        //todo 所有的写最终都会调用HeadContext的write方法
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
             unsafe.write(msg, promise);
         }
-
+        //todo 所有的写最终都会调用HeadContext的flush方法
         @Override
         public void flush(ChannelHandlerContext ctx) {
             unsafe.flush();

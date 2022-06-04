@@ -101,6 +101,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
 
     @Override
     public boolean trySuccess(V result) {
+        //todo 写成功回调
         return setSuccess0(result);
     }
 
@@ -488,6 +489,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
             if (stackDepth < MAX_LISTENER_STACK_DEPTH) {
                 threadLocals.setFutureListenerStackDepth(stackDepth + 1);
                 try {
+                    //todo 通知回调
                     notifyListenersNow();
                 } finally {
                     threadLocals.setFutureListenerStackDepth(stackDepth);
@@ -547,6 +549,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
         }
         for (;;) {
             if (listeners instanceof DefaultFutureListeners) {
+                //todo 通知回调
                 notifyListeners0((DefaultFutureListeners) listeners);
             } else {
                 notifyListener0(this, (GenericFutureListener<?>) listeners);
@@ -575,6 +578,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void notifyListener0(Future future, GenericFutureListener l) {
         try {
+            //todo 最终调用用户自定义的listener的operationComplete方法
             l.operationComplete(future);
         } catch (Throwable t) {
             if (logger.isWarnEnabled()) {
@@ -613,6 +617,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
         if (RESULT_UPDATER.compareAndSet(this, null, objResult) ||
             RESULT_UPDATER.compareAndSet(this, UNCANCELLABLE, objResult)) {
             if (checkNotifyWaiters()) {
+                //todo 通知回调
                 notifyListeners();
             }
             return true;

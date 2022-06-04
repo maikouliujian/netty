@@ -76,10 +76,13 @@ public final class ChannelOutboundBuffer {
     // Entry(flushedEntry) --> ... Entry(unflushedEntry) --> ... Entry(tailEntry)
     //
     // The Entry that is the first in the linked-list structure that was flushed
+    //todo flushedEntry 指针表示第一个被写到操作系统Socket缓冲区中的节点
     private Entry flushedEntry;
     // The Entry which is the first unflushed in the linked-list structure
+    //todo unFlushedEntry 指针表示第一个未被写入到操作系统Socket缓冲区中的节点
     private Entry unflushedEntry;
     // The Entry which represents the tail of the buffer
+    //todo tailEntry指针表示ChannelOutboundBuffer缓冲区的最后一个节点
     private Entry tailEntry;
     // The number of flushed entries that are not written yet
     private int flushed;
@@ -112,6 +115,7 @@ public final class ChannelOutboundBuffer {
      * the message was written.
      */
     public void addMessage(Object msg, int size, ChannelPromise promise) {
+        //todo 每次写都会创建一个待写出的消息节点entry
         Entry entry = Entry.newInstance(msg, size, total(msg), promise);
         if (tailEntry == null) {
             flushedEntry = null;
@@ -213,6 +217,7 @@ public final class ChannelOutboundBuffer {
     /**
      * Return the current message to write or {@code null} if nothing was flushed before and so is ready to be written.
      */
+    //todo 第一个需要刷新的节点的数据
     public Object current() {
         Entry entry = flushedEntry;
         if (entry == null) {
@@ -263,12 +268,13 @@ public final class ChannelOutboundBuffer {
 
         ChannelPromise promise = e.promise;
         int size = e.pendingSize;
-
+        //todo 删除节点
         removeEntry(e);
 
         if (!e.cancelled) {
             // only release message, notify and decrement if it was not canceled before.
             ReferenceCountUtil.safeRelease(msg);
+            //todo write成功回调函数
             safeSuccess(promise);
             decrementPendingOutboundBytes(size, false, true);
         }

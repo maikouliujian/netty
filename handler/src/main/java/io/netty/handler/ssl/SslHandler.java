@@ -743,6 +743,7 @@ public class SslHandler extends ByteToMessageDecoder implements ChannelOutboundH
         return new IllegalStateException("pendingUnencryptedWrites is null, handlerRemoved0 called?");
     }
 
+    //todo 写数据，正常的数据都会被组装成ByteBuf
     @Override
     public void write(final ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (!(msg instanceof ByteBuf)) {
@@ -753,10 +754,12 @@ public class SslHandler extends ByteToMessageDecoder implements ChannelOutboundH
             ReferenceCountUtil.safeRelease(msg);
             promise.setFailure(newPendingWritesNullException());
         } else {
+            //todo 将数据加入到队列中
             pendingUnencryptedWrites.add((ByteBuf) msg, promise);
         }
     }
 
+    //todo 调用flush
     @Override
     public void flush(ChannelHandlerContext ctx) throws Exception {
         // Do not encrypt the first write request if this handler is

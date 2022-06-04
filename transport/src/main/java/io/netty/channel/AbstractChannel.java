@@ -863,6 +863,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         @Override
         public final void write(Object msg, ChannelPromise promise) {
+            //todo 调用 assertEventLoop 确保该方法的调用是在reactor线程中
             assertEventLoop();
 
             ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
@@ -883,7 +884,10 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             int size;
             try {
+                //todo 调用 filterOutboundMessage() 方法，将待写入的对象过滤，
+                // 把非ByteBuf对象和FileRegion过滤，把所有的非直接内存转换成直接内存DirectBuffer
                 msg = filterOutboundMessage(msg);
+                //todo 估算出需要写入的ByteBuf的size
                 size = pipeline.estimatorHandle().size(msg);
                 if (size < 0) {
                     size = 0;
@@ -908,7 +912,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             if (outboundBuffer == null) {
                 return;
             }
-
+            //todo 刷出数据
             outboundBuffer.addFlush();
             flush0();
         }
@@ -946,6 +950,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
 
             try {
+                //todo 写出去的核心方法
                 doWrite(outboundBuffer);
             } catch (Throwable t) {
                 handleWriteError(t);

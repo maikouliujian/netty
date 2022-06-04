@@ -219,7 +219,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 in.remove();
                 return 0;
             }
-
+            //todo 写出数据，最终会调用java nio
             final int localFlushedAmount = doWriteBytes(buf);
             if (localFlushedAmount > 0) {
                 in.progress(localFlushedAmount);
@@ -254,6 +254,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
     protected void doWrite(ChannelOutboundBuffer in) throws Exception {
         int writeSpinCount = config().getWriteSpinCount();
         do {
+            //todo // 拿到第一个需要flush的节点的数据
             Object msg = in.current();
             if (msg == null) {
                 // Wrote all messages.

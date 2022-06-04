@@ -692,7 +692,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
             read();
         }
     }
-
+    //todo 写数据
     @Override
     public ChannelFuture write(Object msg) {
         return write(msg, newPromise());
@@ -715,6 +715,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     private void invokeWrite0(Object msg, ChannelPromise promise) {
         try {
+            //todo 调用outboundhander的write方法
             ((ChannelOutboundHandler) handler()).write(this, msg, promise);
         } catch (Throwable t) {
             notifyOutboundHandlerException(t, promise);
@@ -748,6 +749,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     private void invokeFlush0() {
         try {
+            //todo 调用outboundhander的flush方法
             ((ChannelOutboundHandler) handler()).flush(this);
         } catch (Throwable t) {
             invokeExceptionCaught(t);
@@ -781,7 +783,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
             ReferenceCountUtil.release(msg);
             throw e;
         }
-
+        //todo 找到outbound
         final AbstractChannelHandlerContext next = findContextOutbound(flush ?
                 (MASK_WRITE | MASK_FLUSH) : MASK_WRITE);
         final Object m = pipeline.touch(msg, next);

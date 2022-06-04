@@ -225,6 +225,7 @@ public abstract class AbstractCoalescingBufferQueue {
         Throwable pending = null;
         ByteBuf previousBuf = null;
         for (;;) {
+            //todo 从队列中取出数据
             Object entry = bufAndListenerPairs.poll();
             try {
                 if (entry == null) {
@@ -234,7 +235,7 @@ public abstract class AbstractCoalescingBufferQueue {
                     }
                     break;
                 }
-
+                //todo 处理ByteBuf
                 if (entry instanceof ByteBuf) {
                     if (previousBuf != null) {
                         decrementReadableBytes(previousBuf.readableBytes());
